@@ -2,7 +2,7 @@
 <html>
 <head>
 
-[![Buy Now](https://img.shields.io/badge/Buy%20Now-Click%20Here-brightgreen)](https://yourwebsite.com/payment)
+[![Click Me](https://img.shields.io/badge/Click%20Here-blue?style=for-the-badge)](https://your-link.com)
   
 </body>
 </html>
