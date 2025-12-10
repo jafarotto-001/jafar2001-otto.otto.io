@@ -6,198 +6,210 @@
 <title>Shop</title>
 
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        background: #f5f5f5;
-    }
+    body { font-family: Arial; margin: 0; background: #f5f5f5; }
+    h2 { text-align: center; margin-top: 20px; }
 
-    h2 {
-        margin-left: 15px;
-    }
-
-    /* CATEGORY SECTION (normal) */
-    .categories {
-        display: flex;
-        overflow-x: auto;
+    /* Category Section (NOT 2 per row) */
+    .category-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
         gap: 15px;
-        padding: 15px;
+        padding: 20px;
     }
 
     .category-card {
-        min-width: 120px;
         background: white;
-        padding: 10px;
+        padding: 20px;
         border-radius: 10px;
         text-align: center;
+        cursor: pointer;
         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
 
-    .category-card img {
-        width: 100%;
-        height: 90px;
-        border-radius: 10px;
-        object-fit: cover;
-    }
-
-    /* 2 ITEMS PER ROW SECTIONS */
-    .grid2 {
+    /* Product Sections (2 PER ROW) */
+    .product-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 15px;
-        padding: 15px;
+        padding: 20px;
     }
 
     .product-card {
-        background: white;
+        background: #fff;
         padding: 10px;
         border-radius: 10px;
         text-align: center;
         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        cursor: pointer;
     }
 
     .product-card img {
         width: 100%;
         height: 150px;
         object-fit: cover;
+        border-radius: 8px;
+    }
+
+    /* Product Details Page */
+    #productDetails {
+        display: none;
+        padding: 20px;
+    }
+    #productDetails img {
+        width: 100%;
         border-radius: 10px;
     }
 
-    .buy-btn {
-        margin-top: 10px;
+    .btn {
         background: #ff6600;
         color: white;
+        padding: 12px;
         border: none;
-        padding: 8px 10px;
         width: 100%;
         border-radius: 8px;
+        margin-top: 10px;
         cursor: pointer;
-        font-size: 15px;
-    }
-
-    /* POPUP MODAL */
-    .modal {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.6);
-        display: none;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .modal-content {
-        background: white;
-        padding: 20px;
-        width: 90%;
-        max-width: 350px;
-        border-radius: 12px;
-    }
-
-    input, button {
-        width: 100%;
-        padding: 10px;
-        margin-top: 8px;
         font-size: 16px;
     }
 
-    .close-btn {
-        background: red;
-        color: white;
+    /* Buy Now modal */
+    #buyModal {
+        position: fixed;
+        top:0; left:0;
+        width:100%; height:100%;
+        background: rgba(0,0,0,0.6);
+        display:none;
+        justify-content:center;
+        align-items:center;
     }
-
+    .modal-box {
+        background:white;
+        padding:20px;
+        width:90%;
+        max-width:350px;
+        border-radius:10px;
+    }
 </style>
 </head>
-
 <body>
 
 <h2>Categories</h2>
-<div class="categories" id="categoryRow"></div>
+<div class="category-grid" id="categoryGrid"></div>
 
-<h2>Products</h2>
-<div class="grid2" id="productGrid"></div>
+<h2 id="sectionTitle">Products</h2>
+<div id="productGrid" class="product-grid"></div>
 
-<h2>Suggested for You</h2>
-<div class="grid2" id="suggestedGrid"></div>
+<!-- Product Details Page -->
+<div id="productDetails"></div>
 
-<h2>You May Also Like</h2>
-<div class="grid2" id="likeGrid"></div>
-
-<!-- ========== CASH ON DELIVERY MODAL ========== -->
-<div class="modal" id="codModal">
-    <div class="modal-content">
-        <h3>Cash On Delivery</h3>
-        <form id="orderForm" method="POST">
-            <input type="text" name="product" id="productName" readonly>
-            <input type="text" name="name" placeholder="Your Name" required>
-            <input type="text" name="phone" placeholder="Phone Number" required>
-            <input type="text" name="address" placeholder="Delivery Address" required>
-            <button type="submit" style="background:#28a745;color:white;">Place Order</button>
-            <button type="button" class="close-btn" onclick="closeForm()">Cancel</button>
+<!-- Buy Now Popup -->
+<div id="buyModal">
+    <div class="modal-box">
+        <h3>Cash on Delivery</h3>
+        <form action="https://formspree.io/f/yourFormIDHere" method="POST">
+            <input type="text" name="name" placeholder="Your Name" required class="input"><br><br>
+            <input type="text" name="address" placeholder="Address" required class="input"><br><br>
+            <input type="text" name="phone" placeholder="Phone Number" required class="input"><br><br>
+            <button class="btn">Place Order</button>
         </form>
+        <button class="btn" style="background:black" onclick="closeModal()">Close</button>
     </div>
 </div>
 
 <script>
-/* PRODUCT DATA */
-const products = [
-    {name: "Men T-shirt", price: "$12", img: "https://via.placeholder.com/200"},
-    {name: "Ladies Dress", price: "$22", img: "https://via.placeholder.com/200"},
-    {name: "Shoes", price: "$18", img: "https://via.placeholder.com/200"},
-    {name: "Cap", price: "$5", img: "https://via.placeholder.com/200"}
-];
-
-/* CATEGORY DATA */
+// -------------------------- DATA --------------------------
 const categories = [
-    {name: "Men", img: "https://via.placeholder.com/200"},
-    {name: "Women", img: "https://via.placeholder.com/200"},
-    {name: "Kids", img: "https://via.placeholder.com/200"},
-    {name: "Shoes", img: "https://via.placeholder.com/200"}
+    {name: "Men", id:"men"},
+    {name: "Women", id:"women"},
+    {name: "Shoes", id:"shoes"}
 ];
 
-/* LOAD CATEGORIES */
-const categoryRow = document.getElementById("categoryRow");
-categories.forEach(c => {
-    categoryRow.innerHTML += `
-        <div class="category-card">
-            <img src="${c.img}">
-            <p>${c.name}</p>
+const products = {
+    men: [
+        {name:"Men T-shirt", price:"$12", img:"https://via.placeholder.com/200"},
+        {name:"Men Jeans", price:"$25", img:"https://via.placeholder.com/200"},
+        {name:"Men Hoodie", price:"$30", img:"https://via.placeholder.com/200"},
+    ],
+    women: [
+        {name:"Ladies Dress", price:"$22", img:"https://via.placeholder.com/200"},
+        {name:"Ladies Bag", price:"$18", img:"https://via.placeholder.com/200"},
+    ],
+    shoes: [
+        {name:"Sport Shoes", price:"$20", img:"https://via.placeholder.com/200"},
+        {name:"Office Shoes", price:"$28", img:"https://via.placeholder.com/200"},
+    ]
+};
+
+// ----------------------- RENDER CATEGORIES -----------------------
+const categoryGrid = document.getElementById("categoryGrid");
+categories.forEach(cat => {
+    categoryGrid.innerHTML += `
+        <div class="category-card" onclick="showCategory('${cat.id}')">
+            ${cat.name}
         </div>
     `;
 });
 
-/* FUNCTION TO DISPLAY PRODUCT CARDS */
-function loadProducts(gridId) {
-    const grid = document.getElementById(gridId);
-    products.forEach(p => {
+// ----------------------- SHOW PRODUCTS -----------------------
+function showCategory(catID) {
+    document.getElementById("productDetails").style.display = "none";
+    document.getElementById("productGrid").style.display = "grid";
+    document.getElementById("sectionTitle").innerText = catID.toUpperCase();
+
+    const grid = document.getElementById("productGrid");
+    grid.innerHTML = "";
+
+    products[catID].forEach((p, index) => {
         grid.innerHTML += `
-            <div class="product-card">
+            <div class="product-card" onclick="viewProduct('${catID}', ${index})">
                 <img src="${p.img}">
                 <h3>${p.name}</h3>
                 <p>${p.price}</p>
-                <button class="buy-btn" onclick="openForm('${p.name}')">Buy Now</button>
             </div>
         `;
     });
 }
 
-/* LOAD ALL PRODUCT SECTIONS */
-loadProducts("productGrid");
-loadProducts("suggestedGrid");
-loadProducts("likeGrid");
+// ------------------------ PRODUCT DETAILS ------------------------
+function viewProduct(catID, index) {
+    const p = products[catID][index];
 
-/* OPEN POPUP FORM */
-function openForm(name) {
-    document.getElementById("productName").value = name;
-    document.getElementById("codModal").style.display = "flex";
+    document.getElementById("productGrid").style.display = "none";
+
+    const details = document.getElementById("productDetails");
+    details.style.display = "block";
+
+    // You Might Also Like (other items in category)
+    const others = products[catID].filter((item, i) => i !== index);
+
+    let likeHTML = "<h3>You Might Also Like</h3><div class='product-grid'>";
+    others.forEach(o => {
+        likeHTML += `
+            <div class="product-card">
+                <img src="${o.img}">
+                <h4>${o.name}</h4>
+                <p>${o.price}</p>
+            </div>
+        `;
+    });
+    likeHTML += "</div>";
+
+    // Main Product Page
+    details.innerHTML = `
+        <img src="${p.img}">
+        <h2>${p.name}</h2>
+        <p>${p.price}</p>
+        <button class="btn" onclick="openModal()">Buy Now</button>
+        ${likeHTML}
+    `;
 }
 
-/* CLOSE POPUP */
-function closeForm() {
-    document.getElementById("codModal").style.display = "none";
+// ------------------------ BUY NOW POPUP ------------------------
+function openModal() {
+    document.getElementById("buyModal").style.display = "flex";
+}
+function closeModal() {
+    document.getElementById("buyModal").style.display = "none";
 }
 </script>
 
