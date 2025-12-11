@@ -1,255 +1,128 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Shop</title>
-
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Full E‑Commerce Website</title>
 <style>
-    body { font-family: Arial; margin: 0; background:#f4f4f4; }
+ body { font-family: Arial; margin: 0; background: #f2f2f2; }
+ h2 { margin-left: 15px; }
+ .search-box { padding: 15px; text-align:center; }
+ .search-input { width:90%; padding:10px; border:1px solid #bbb; border-radius:8px; }/* CATEGORY SECTION */ .categories { display:flex; overflow-x:auto; gap:15px; padding:15px; } .category-card { min-width:120px; background:white; padding:10px; border-radius:10px; text-align:center; box-shadow:0 2px 6px rgba(0,0,0,0.15); cursor:pointer; } .category-card img { width:100%; height:90px; object-fit:cover; border-radius:8px; }
 
-    h2 { text-align: center; margin-top: 25px; }
+/* 2 ITEMS PER ROW */ .grid2 { display:grid; grid-template-columns:repeat(2,1fr); gap:15px; padding:15px; } .product-card { background:white; padding:10px; border-radius:10px; text-align:center; box-shadow:0 2px 5px rgba(0,0,0,0.15); cursor:pointer; } .product-card img { width:100%; height:150px; object-fit:cover; border-radius:8px; } .btn { width:100%; padding:10px; background:#ff6600; border:none; color:#fff; border-radius:8px; margin-top:8px; cursor:pointer; }
 
-    /* Categories (NOT 2 per row) */
-    .category-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 15px;
-        padding: 20px;
-    }
-    .category-card {
-        background: white;
-        padding: 20px;
-        border-radius: 10px;
-        text-align: center;
-        cursor: pointer;
-        font-size: 18px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
+/* PRODUCT PAGE */ #productPage { display:none; padding:20px; } #productPage img { width:100%; border-radius:12px; }
 
-    /* PRODUCT SECTIONS 2 PER ROW */
-    .product-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 15px;
-        padding: 20px;
-    }
-    .product-card {
-        background: white;
-        padding: 10px;
-        border-radius: 10px;
-        text-align: center;
-        cursor: pointer;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    .product-card img {
-        width: 100%;
-        height: 150px;
-        border-radius: 10px;
-        object-fit: cover;
-    }
+/* COD FORM */ #codForm { display:none; padding:15px; background:white; margin:10px; border-radius:10px; } #codForm input { width:100%; padding:10px; margin-top:10px; border-radius:8px; border:1px solid #bbb; } #sendOrder { background:green; margin-top:10px; } </style>
 
-    /* Product Page */
-    #productDetails { display:none; padding:20px; }
-    #productDetails img { width:100%; border-radius:10px; }
-
-    .btn {
-        width:100%;
-        padding:12px;
-        border:none;
-        border-radius:8px;
-        background:#ff6600;
-        color:white;
-        margin-top:10px;
-        cursor:pointer;
-        font-size:16px;
-    }
-
-    /* BUY MODAL */
-    #buyModal {
-        display:none;
-        position:fixed;
-        top:0; left:0;
-        width:100%; height:100%;
-        background:rgba(0,0,0,0.7);
-        justify-content:center;
-        align-items:center;
-    }
-    .modal-box {
-        background:white;
-        padding:20px;
-        width:90%;
-        max-width:350px;
-        border-radius:10px;
-    }
-    .input-box {
-        width:100%;
-        padding:10px;
-        margin-bottom:12px;
-        border-radius:6px;
-        border:1px solid #ccc;
-    }
-</style>
 </head>
-
-<body>
-
-<!-- FRONT PAGE -->
-<h2>Categories</h2>
-<div class="category-grid" id="categoryGrid"></div>
-
-<h2>Products</h2>
-<div class="product-grid" id="mainProducts"></div>
-
-<h2>Suggested For You</h2>
-<div class="product-grid" id="suggestedProducts"></div>
-
-<h2>You May Also Like</h2>
-<div class="product-grid" id="likedProducts"></div>
-
-<!-- PRODUCT DETAILS -->
-<div id="productDetails"></div>
-
-<!-- BUY POPUP -->
-<div id="buyModal">
-    <div class="modal-box">
-        <h3>Cash on Delivery</h3>
-        <form action="https://formspree.io/f/yourFormID" method="POST">
-            <input class="input-box" type="text" name="name" placeholder="Your Name" required>
-            <input class="input-box" type="text" name="address" placeholder="Your Address" required>
-            <input class="input-box" type="text" name="phone" placeholder="Your Phone" required>
-            <button class="btn">Place Order</button>
-        </form>
-        <button class="btn" style="background:black" onclick="closeModal()">Close</button>
-    </div>
-</div>
-
-<script>
-// ---------------------------------------------------
-// DATA
-// ---------------------------------------------------
-const categories = [
-    {name:"Men", id:"men"},
-    {name:"Women", id:"women"},
-    {name:"Shoes", id:"shoes"},
-    {name:"Kids", id:"kids"}
+<body><!-- SEARCH --><div class="search-box">
+ <input id="searchInput" class="search-input" placeholder="Search products..." oninput="searchProducts()" />
+</div><!-- CATEGORY --><h2>Categories</h2>
+<div id="categories" class="categories"></div><!-- PRODUCT GRID --><h2>Products</h2>
+<div id="productGrid" class="grid2"></div><!-- SUGGESTED --><h2>Suggested For You</h2>
+<div id="suggestedGrid" class="grid2"></div><!-- YOU MAY ALSO LIKE --><h2>You May Also Like</h2>
+<div id="likeGrid" class="grid2"></div><!-- PRODUCT PAGE --><div id="productPage"></div><!-- COD FORM --><div id="codForm">
+ <h3>Cash On Delivery</h3>
+ <input id="codName" placeholder="Your Name" />
+ <input id="codPhone" placeholder="Phone Number" />
+ <input id="codAddress" placeholder="Delivery Address" />
+ <button id="sendOrder" class="btn" onclick="sendOrder()">Place Order</button>
+ <button class="btn" style="background:black" onclick="closeCOD()">Close</button>
+</div><script>
+// CATEGORY DATA
+const categories=[
+ {name:"Men", id:"men", img:"https://via.placeholder.com/200"},
+ {name:"Women", id:"women", img:"https://via.placeholder.com/200"},
+ {name:"Shoes", id:"shoes", img:"https://via.placeholder.com/200"}
 ];
 
-const products = {
-    men: [
-        {name:"Men T-shirt", price:"$12", desc:"Cotton T-shirt", img:"https://via.placeholder.com/200"},
-        {name:"Men Hoodie", price:"$25", desc:"Warm hoodie", img:"https://via.placeholder.com/200"},
-    ],
-    women: [
-        {name:"Ladies Dress", price:"$22", desc:"Beautiful dress", img:"https://via.placeholder.com/200"},
-        {name:"Ladies Bag", price:"$18", desc:"Fashionable bag", img:"https://via.placeholder.com/200"},
-    ],
-    shoes: [
-        {name:"Running Shoes", price:"$20", desc:"Comfortable shoes", img:"https://via.placeholder.com/200"},
-        {name:"Formal Shoes", price:"$28", desc:"Office shoes", img:"https://via.placeholder.com/200"},
-    ],
-    kids: [
-        {name:"Kids Shirt", price:"$10", desc:"Nice shirt", img:"https://via.placeholder.com/200"},
-        {name:"Kids Shorts", price:"$14", desc:"Comfortable shorts", img:"https://via.placeholder.com/200"},
-    ]
+// PRODUCT DATA
+const products={
+ men:[{name:"Men T-shirt", price:12, img:"https://via.placeholder.com/200", desc:"Men T-shirt high quality"}],
+ women:[{name:"Ladies Dress", price:22, img:"https://via.placeholder.com/200", desc:"Beautiful ladies dress"}],
+ shoes:[{name:"Running Shoes", price:30, img:"https://via.placeholder.com/200", desc:"Comfort running shoes"}]
 };
 
-// ---------------------------------------------------
 // RENDER CATEGORIES
-// ---------------------------------------------------
-const categoryGrid = document.getElementById("categoryGrid");
-categories.forEach(cat => {
-    categoryGrid.innerHTML += `
-        <div class="category-card" onclick="showCategory('${cat.id}')">${cat.name}</div>
-    `;
+const catDiv=document.getElementById('categories');
+categories.forEach(c=>{
+ catDiv.innerHTML+=<div class='category-card' onclick="loadCategory('${c.id}')"><img src='${c.img}' /><p>${c.name}</p></div>;
 });
 
-// ---------------------------------------------------
-// FRONT PAGE: PRODUCTS, SUGGESTED, LIKED
-// ---------------------------------------------------
-function renderFrontPage() {
-    const main = document.getElementById("mainProducts");
-    const sug = document.getElementById("suggestedProducts");
-    const like = document.getElementById("likedProducts");
-
-    Object.values(products).flat().forEach(p => {
-        main.innerHTML += productCard(p);
-        sug.innerHTML += productCard(p);
-        like.innerHTML += productCard(p);
-    });
+// FRONT PAGE LOAD ALL PRODUCTS
+function loadAll(){
+ let all=Object.values(products).flat();
+ const grid=document.getElementById("productGrid");
+ all.forEach(p=>grid.innerHTML+=productCard(p));
+ document.getElementById("suggestedGrid").innerHTML=grid.innerHTML;
+ document.getElementById("likeGrid").innerHTML=grid.innerHTML;
 }
 
-function productCard(p) {
-    return `
-    <div class="product-card" onclick="viewProduct('${p.name}')">
-        <img src="${p.img}">
-        <h3>${p.name}</h3>
-        <p>${p.price}</p>
-    </div>`;
+function productCard(p){
+ return `<div class='product-card' onclick='openProduct("${p.name}")'>
+ <img src='${p.img}' />
+ <h3>${p.name}</h3>
+ <p>$${p.price}</p>
+ <button class='btn' onclick='buyNow(event, "${p.name}")'>Buy Now</button>
+ </div>`;
 }
 
-renderFrontPage();
+loadAll();
 
-// ---------------------------------------------------
-// CATEGORY CLICK → SHOW ONLY THAT CATEGORY
-// ---------------------------------------------------
-function showCategory(catID) {
-    const productList = document.getElementById("mainProducts");
-    productList.innerHTML = "";
-
-    products[catID].forEach(p => {
-        productList.innerHTML += productCard(p);
-    });
-
-    document.getElementById("productDetails").style.display = "none";
+// CATEGORY FILTER
+function loadCategory(id){
+ const grid=document.getElementById('productGrid');
+ grid.innerHTML="";
+ products[id].forEach(p=>grid.innerHTML+=productCard(p));
 }
 
-// ---------------------------------------------------
-// PRODUCT DETAILS PAGE
-// ---------------------------------------------------
-function viewProduct(productName) {
-    let product = null;
-
-    Object.values(products).forEach(list => {
-        list.forEach(p => {
-            if (p.name === productName) product = p;
-        });
-    });
-
-    if (!product) return;
-
-    document.getElementById("mainProducts").innerHTML = "";
-    document.getElementById("suggestedProducts").innerHTML = "";
-    document.getElementById("likedProducts").innerHTML = "";
-
-    const details = document.getElementById("productDetails");
-    details.style.display = "block";
-
-    // Generate You Might Also Like
-    let likedHTML = "<h2>You Might Also Like</h2><div class='product-grid'>";
-    Object.values(products).flat().forEach(p => {
-        if (p.name !== product.name) likedHTML += productCard(p);
-    });
-    likedHTML += "</div>";
-
-    details.innerHTML = `
-        <img src="${product.img}">
-        <h2>${product.name}</h2>
-        <p>${product.price}</p>
-        <p>${product.desc}</p>
-
-        <button class="btn" onclick="openModal()">Buy Now</button>
-
-        ${likedHTML}
-    `;
+// SEARCH
+function searchProducts(){
+ const text=document.getElementById('searchInput').value.toLowerCase();
+ const all=Object.values(products).flat();
+ const result=all.filter(p=>p.name.toLowerCase().includes(text));
+ const grid=document.getElementById('productGrid'); grid.innerHTML="";
+ result.forEach(p=>grid.innerHTML+=productCard(p));
 }
 
-// ---------------------------------------------------
-// BUY NOW POPUP
-// ---------------------------------------------------
-function openModal() { document.getElementById("buyModal").style.display = "flex"; }
-function closeModal() { document.getElementById("buyModal").style.display = "none"; }
+// OPEN PRODUCT PAGE
+function openProduct(name){
+ const item=findProduct(name);
+ document.getElementById('productPage').style.display="block";
+ document.getElementById('productPage').innerHTML=
+ `<h2>${item.name}</h2>
+ <img src='${item.img}' />
+ <p>${item.desc}</p>
+ <p><b>Price: $${item.price}</b></p>
+ <button class='btn' onclick='buyNow(event, "${item.name}")'>Buy Now</button>
+ <h2>You May Also Like</h2>
+ <div class='grid2'>${renderLike(name)}</div>`;
+ window.scrollTo({ top:0, behavior:'smooth' });
+}
 
-</script>
-</body>
+function findProduct(name){ return Object.values(products).flat().find(p=>p.name===name); }
+
+function renderLike(name){
+ const all=Object.values(products).flat();
+ return all.filter(p=>p.name!==name).map(p=>productCard(p)).join('');
+}
+
+// BUY NOW → COD FORM
+let currentOrder="";
+function buyNow(e,name){ e.stopPropagation(); currentOrder=name; document.getElementById('codForm').style.display="block"; }
+function closeCOD(){ document.getElementById('codForm').style.display="none"; }
+
+function sendOrder(){
+ const n=document.getElementById('codName').value;
+ const p=document.getElementById('codPhone').value;
+ const a=document.getElementById('codAddress').value;
+ alert(`Order Sent To Owner:
+Product: ${currentOrder}
+Name: ${n}
+Phone: ${p}
+Address: ${a}`);
+ closeCOD();
+}
+</script></body>
 </html>
